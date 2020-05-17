@@ -486,7 +486,10 @@ class Daft:
         divs = soup.find_all("div", {"class": "box"})
         if len(divs) == 0:
             divs = soup.find_all("div", {"class": "PropertyCardContainer__container"})
-            [listings.append(PropertyForSale(div)) for div in divs]
+            if isinstance(self._listing_type, PropertyForRent) or isinstance(self._listing_type, CommercialType):
+                [listings.append(PropertyForRent(div)) for div in divs]
+            else:
+                [listings.append(PropertyForSale(div)) for div in divs]
         else:
             [listings.append(PropertyForRent(div)) for div in divs]
         self._search_count = soup.find(
@@ -516,10 +519,12 @@ class Daft:
                 divs = soup.find_all(
                     "div", {"class": "PropertyCardContainer__container"}
                 )
-                if isinstance(self._listing_type, PropertyForRent):
+                if isinstance(self._listing_type, PropertyForRent) or isinstance(self._listing_type, CommercialType):
                     [listings.append(PropertyForRent(div)) for div in divs]
                 else:
                     [listings.append(PropertyForSale(div)) for div in divs]
+            else:
+                [listings.append(PropertyForRent(div)) for div in divs]
             self.set_offset(int(self._offset) + results_per_page)
             current_page += 1
 
